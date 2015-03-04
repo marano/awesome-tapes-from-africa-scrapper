@@ -40,5 +40,6 @@ PLATFORMS
 
 DEPENDENCIES
   capybara
+  nokogiri
   pry
   selenium-webdriver
