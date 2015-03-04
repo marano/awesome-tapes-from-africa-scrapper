@@ -55,14 +55,12 @@ def fetch_album_data_via_link(album_link, category)
     if !is_sound_cloud
       content = doc.at_css('.single_left')
 
-      if content.at_css('#jp-relatedposts')
-        content.at_css('#jp-relatedposts').remove
-      end
+      content.at_css('#jp-relatedposts').remove if content.at_css('#jp-relatedposts')
       if content.at_css('#comments')
         content.at_css('#comments').remove
         content.at_css('.commentlist').remove
       end
-      content.at_css('#respond').remove
+      content.at_css('#respond').remove if content.at_css('#respond')
   
       details = {
         href: album_link,
