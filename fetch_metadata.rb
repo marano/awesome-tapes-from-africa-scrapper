@@ -40,17 +40,17 @@ def fetch_album_data_via_link(album_link)
   
     if header.include?('—')
       album_data = header.split('—')
-      details[:artist] = album_data[0].strip
-      details[:title] = album_data[1].strip
+      details[:artist] = clean(album_data[0])
+      details[:title] = clean(album_data[1])
     else
-      details[:title] = header.strip
+      details[:title] = clean(header)
     end
 
     details[:tracks] = []
 
     content.css('a').select { |link| link['href'] && link['href'].end_with?('.mp3') }.each do |link|
       details[:tracks] << {
-        title: link.content.strip,
+        title: clean(link.content),
         href: link['href']
       }
     end
@@ -59,7 +59,7 @@ def fetch_album_data_via_link(album_link)
 
     details[:covers] = content.css('img').map do |image|
       {
-        title: image['alt'].strip,
+        title: clean(image['alt']),
         src: image['src'].split('?')[0]
       }
     end
@@ -101,6 +101,10 @@ def save_data_to_file
   output_file = 'output/data.json'
   FileUtils.rm_rf(output_file)
   File.open(output_file, 'w') { |file| file.write(JSON.pretty_generate(@albums_data)) }
+end
+
+def clean(string)
+  string.strip.gsub('“', '"').gsub('”', '"')
 end
 
 fetch_all_archives
