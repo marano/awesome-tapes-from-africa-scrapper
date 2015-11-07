@@ -4,10 +4,12 @@ require 'open-uri'
 require 'rubygems'
 require 'pry'
 require 'mp3info'
+require 'uri'
 
 data = JSON.parse(File.read('output/data.json'))
 
 def save(from_url, target_file)
+  from_url = URI.escape(from_url)
   if File.exists?(target_file)
     puts "File already exists, skipping!"
   else
@@ -76,8 +78,11 @@ data.each do |album|
           puts "Track number is different from metadata! '#{mp3.tag.tracknum}' != '#{current_track}'"
         end
 
-        if cover_data
+        if cover_data && File.exists?(cover_local_path)
+          puts "Adding cover to file ..."
           mp3.tag2.add_picture(File.new(cover_local_path, 'rb').read)
+        else
+          puts "Skip adding cover to file ..."
         end
       end
     end
