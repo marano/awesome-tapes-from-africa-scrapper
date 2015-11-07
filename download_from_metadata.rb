@@ -12,6 +12,7 @@ def save(from_url, target_file)
   from_url = URI.escape(from_url)
   if File.exists?(target_file)
     puts "File already exists, skipping!"
+    true
   else
     FileUtils.mkdir_p(File.dirname(target_file))
     begin
@@ -55,21 +56,26 @@ data.each do |album|
       Mp3Info.open(local_path) do |mp3|
         if mp3.tag.title.nil? || mp3.tag.title == ''
           puts "Title tag missing!"
-          mp3.tag.title = track['title']
+          mp3.tag.title = track['title'] unless track['title'] == ''
         elsif mp3.tag.title != track['title']
           puts "Title is different from metadata! '#{mp3.tag.title}' != '#{track['title']}'"
+          mp3.tag.title = track['title'] if track['title'] && track['title'] == ''
         end
         if mp3.tag.artist.nil? || mp3.tag.artist == ''
           puts "Artist tag missing!"
           mp3.tag.artist = album['artist']
         elsif mp3.tag.artist != album['artist']
           puts "Artist is different from metadata! '#{mp3.tag.artist}' != '#{album['artist']}'"
+          mp3.tag.artist = album['artist']
+          mp3.tag.title = album['artist'] if album['artist'] && album['artist'] == ''
         end
         if mp3.tag.album.nil? || mp3.tag.album == ''
           puts "Album tag missing!"
           mp3.tag.album = album['title']
         elsif mp3.tag.album != album['title']
           puts "Album is different from metadata! '#{mp3.tag.album}' != '#{album['title']}'"
+          mp3.tag.album = album['title']
+          mp3.tag.title = album['title'] if album['title'] && album['title'] != ''
         end
         if mp3.tag.tracknum.nil? || mp3.tag.tracknum == ''
           puts "Track number tag missing!"
